@@ -42,12 +42,18 @@ class Elementalist(object):
 #       break
 
 def play_as_server(client):
-  data = {'msg': 'Hello, world!'}
-  send(client, data)
+  print('\x1b[3F\x1b[J', end='') # clear initial connection text
+  my_name = input('Hey there, what\'s your name? ')
+  friend_name = receive(client)
+  send(client, my_name)
+  print('Hi {}, I\'m {}.'.format(my_name, friend_name))
 
 def play_as_client(server):
-  data = receive(server)
-  print(['msg'])
+  print('\x1b[3F\x1b[J', end='') # clear initial connection text
+  my_name = input('Hey there, what\'s your name? ')
+  send(server, my_name)
+  friend_name = receive(server)
+  print('Hi {}, I\'m {}.'.format(my_name, friend_name))
 
 if __name__ == "__main__":
   if ('start' in input('would you like to start or join? ').lower()):
