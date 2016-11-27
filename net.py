@@ -3,6 +3,24 @@ import socket
 
 from contextlib import contextmanager
 
+# technique mentioned on StackOverflow
+# https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
+def get_local_ipv4():
+  # Try to get local IP that other computers can recognize you by
+  ip = socket.gethostbyname(socket.gethostname())
+  # If IP is only returning local host, try a different method
+  if ip == '127.0.0.1' or ip == '0.0.0.0':
+    # try to connect to Google DNS and check own address from connection
+    temp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+      temp.connect(('8.8.8.8', 53))
+      ip = temp.getsockname()[0]
+    except OSError:
+      pass
+    finally:
+      temp.close()
+  return ip
+
 @contextmanager
 def start_server_and_connect_to_client():
   # set up server
@@ -11,7 +29,7 @@ def start_server_and_connect_to_client():
   server_socket.listen(1)
   
   # print host name and port number so client can connect
-  print('Host: ' + socket.gethostname())
+  print('Host: ' + get_local_ipv4())
   print('Port: ' + str(server_socket.getsockname()[1]))
 
   # wait for client to connect
