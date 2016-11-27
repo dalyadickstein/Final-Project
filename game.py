@@ -54,7 +54,7 @@ class Elementalist(object):
 #       break
 
 def play_as_server(client):
-  if supports_ansi:
+  if supports_ansi():
     print('\x1b[3F\x1b[J', end='') # clear initial connection text
   else:
     print()
@@ -64,7 +64,7 @@ def play_as_server(client):
   print('Hi {}, I\'m {}.'.format(my_name, friend_name))
 
 def play_as_client(server):
-  if supports_ansi:
+  if supports_ansi():
     print('\x1b[3F\x1b[J', end='') # clear initial connection text
   else:
     print()
