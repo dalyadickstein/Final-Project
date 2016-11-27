@@ -1,3 +1,5 @@
+import platform
+import os
 import sys
 
 from random import randint
@@ -7,6 +9,16 @@ from net import (
   start_server_and_connect_to_client,
   send, receive
 )
+
+# adapted from gist.github.com/ssbarnea/1316877
+def supports_ansi():
+  stdout_is_a_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
+  term_is_ansi = 'TERM' in os.environ and os.environ['TERM'] == 'ANSI'
+  if not stdout_is_a_tty and not term_is_ansi:
+    return False
+  if platform.system() == 'Windows' and not term_is_ansi:
+    return False
+  return True
 
 class Elementalist(object):
 
@@ -42,14 +54,20 @@ class Elementalist(object):
 #       break
 
 def play_as_server(client):
-  print('\x1b[3F\x1b[J', end='') # clear initial connection text
+  if supports_ansi:
+    print('\x1b[3F\x1b[J', end='') # clear initial connection text
+  else:
+    print()
   my_name = input('Hey there, what\'s your name? ')
   friend_name = receive(client)
   send(client, my_name)
   print('Hi {}, I\'m {}.'.format(my_name, friend_name))
 
 def play_as_client(server):
-  print('\x1b[3F\x1b[J', end='') # clear initial connection text
+  if supports_ansi:
+    print('\x1b[3F\x1b[J', end='') # clear initial connection text
+  else:
+    print()
   my_name = input('Hey there, what\'s your name? ')
   send(server, my_name)
   friend_name = receive(server)
