@@ -74,7 +74,7 @@ def play_as_client(server):
   print('Hi {}, I\'m {}.'.format(my_name, friend_name))
 
 if __name__ == '__main__':
-  if ('start' in input('would you like to start or join? ').lower()):
+  if 'start' in input('Would you like to start or join? ').lower():
     with start_server_and_connect_to_client() as client:
       play_as_server(client)
   else:

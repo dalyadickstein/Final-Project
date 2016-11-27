@@ -76,10 +76,4 @@ def receive(peer_socket):
       raise SystemExit('connection terminated')
     msg_chunx.append(msg_chunk)
     num_bytes_received += len(msg_chunk)
-  msg = b''.join(msg_chunx).decode('utf-8')
-  try:
-    data = json.loads(msg) # message is string here
-  except Exception as e:
-    raise e
-    data = { 'error_msg': 'Badly formed message', 'exception': e }
-  return data
+  return json.loads(b''.join(msg_chunx).decode('utf-8'))
