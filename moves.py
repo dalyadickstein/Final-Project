@@ -1,71 +1,69 @@
-from elementalist import Elementalist
-
-class Move(object):
-
-    def __init__(self, element, power, speed):
-        self.element = element
-        self.power = power
-        self.speed = speed
-
-class Fireball(Move):
-
-    def __init__(self):
-        Move.__init__(self, 'fire', 60, 50)
-        self.info = 'Lobs a fireball that damages and may burn an opponent.'
-        self.name = 'fireball'
-
-    def use(user, enemy):
-        # if enemy has no status condition, change of burning
-        if enemy.status == 'healthy' and random.randint(3,5) % 2 == 0:
-            enemy.status = 'burned'
-
-class Inferno(Move):
-
-    def __init__(self):
-        Move.__init__(self, 'fire', 100, 10)
-        self.info = (
-            'Summons a raging inferno that is so powerful, the user loses HP' +
-            ' out of exhaustion.'
-        )
-        self.name = 'inferno'
-
-    def use(user, enemy):
-        user.hp -= 15
-
-
-fireball = Fireball()
-inferno = Inferno()
-
-FIRE_MOVELIST = [fireball, inferno]
-
-    # def burns(self):
-    #     return random.randint(3,5) % 2 == 0
-
-# class Firestorm(Move):
-#     def __init__(self):
-#         Move.__init__('fire', 40, power)
-
-
-# def fireball(user, enemy):
-#     fireball = Move('fire', 50, 60)
-#     fireball.info = 'Lobs a fireball that damages and may burn an opponent.'
-#     if random.randint(3,5) % 2 == 0:
-#         # Print out on both screens:
-#         # 'Your opponent was burned!' or 'You were burned!'
-#         enemy.status = 'burned'
-#     enemy.hp -= fireball.power
-
-
-
-move_list = [
-    'foo',
-    'bar',
-    'baz'
-]
-
-fire_move_list = [
-    Fireball,
-
-]
-
-
+MOVES = {
+  'fireball': {
+    'type': 'fire',
+    'power': 60,
+    'speed': 50,
+    'info': 'Lobs a fireball that damages and may burn an opponent.',
+    'effect': {
+      'typ': 'burn',
+      'probability': 0.7
+    }
+  },
+  'inferno': {
+    'type': 'fire',
+    'power': 100,
+    'speed': 10,
+    'info': ('Summons a raging inferno that is so powerful, the user loses HP' +
+      ' out of exhaustion.'),
+    'effect': {
+      'typ': 'backlash',
+      'probability': 1.0,
+      'severity': 15
+    }
+  },
+  'firedance': {
+    'type': 'fire',
+    'power': 0,
+    'speed': 60,
+    'info': 'Performs a ritualistic fiery dance that boosts attack and speed.',
+    'effect': {
+      'typ': 'boost',
+      'probability': 1.0,
+      'atkboost': 15,
+      'spdboost': 15
+    }
+  },
+  'pyromania': {
+    'type': 'fire',
+    'power': 30,
+    'speed': 30,
+    'info': 'A somewhat weak attack that boosts attack.',
+    'effect': {
+      'typ': 'boost',
+      'probability': 1.0,
+      'atkboost': 10,
+      'spdboost': 0
+    }
+  },
+  'roast': {
+    'type': 'fire',
+    'power': 0,
+    'speed': 40,
+    'info': 'Roasts the opponent to inflict a burn.',
+    'effect': {
+      'typ': 'burn',
+      'probability': 1.0,
+    }
+  },
+  'fisticuffs': {
+    'type': 'normal',
+    'power': 40,
+    'speed': 40,
+    'info': 'Brawls with fists. May result in damage to oneself.',
+    'effect': {
+      'typ': 'backlash',
+      'probability': 0.3,
+      'severity': 10
+    }
+  }
+}
