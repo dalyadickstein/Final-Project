@@ -185,16 +185,14 @@ MOVES = {
   }
 }
 
-
-
-  'dropkick': {
-    'type': 'normal',
-    'power': 45,
-    'speed': 40,
-    'info': 'Dropkicks the opponent and sometimes reduces opponent\'s speed.'
-    'effect': {
-      'typ': 'cripple'
-      'probability': 0.5
-      'severity': 15
-    }
-  }
+  # 'dropkick': {
+  #   'type': 'normal',
+  #   'power': 45,
+  #   'speed': 40,
+  #   'info': 'Dropkicks the opponent and sometimes reduces opponent\'s speed.'
+  #   'effect': {
+  #     'typ': 'cripple'
+  #     'probability': 0.5
+  #     'severity': 15
+  #   }
+  # }

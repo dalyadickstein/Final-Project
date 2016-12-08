@@ -6,7 +6,7 @@ from random import randint, random
 from stats import STAT_OPTIONS
 from moves import MOVES
 from elementalist import Elementalist
-from fight import server_first, attack, both_alive, is_super, is_weak
+from fight import server_first, attack, both_alive, is_strong, is_weak
 from net import (
   start_client_and_connect_to_server,
   start_server_and_connect_to_client,
@@ -323,8 +323,8 @@ def play_as_client(server):
     client_moveset = pick_moveset('wind')
 
   client_info = {
-    'element': client_element
-    'stats': client_stats
+    'element': client_element,
+    'stats': client_stats,
     'moveset': client_moveset
   }
   send(server, client_info)
