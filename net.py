@@ -55,7 +55,7 @@ def send(peer_socket, data):
   #   ASK LEE ABOUT HTONL AND NTOHL   #
   #                                   #
   # # # # # # # # # # # # # # # # # # #
-  msg_size = socket.htonl(len(msg)).to_bytes(4, byteorder='big')
+  msg_size = len(msg).to_bytes(4, byteorder='big')
   msg = msg_size + msg # prepend size of message to message body
   while msg:
     num_bytes_sent = peer_socket.send(msg)
@@ -65,7 +65,7 @@ def send(peer_socket, data):
 
 def receive(peer_socket):
   # read the first 4 bytes as integer to determine length of message
-  msg_size = socket.ntohl(int.from_bytes(peer_socket.recv(4), byteorder='big'))
+  msg_size = int.from_bytes(peer_socket.recv(4), byteorder='big')
   if msg_size == 0:
     raise SystemExit('connection terminated')
   msg_chunx = []

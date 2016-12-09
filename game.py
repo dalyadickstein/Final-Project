@@ -181,6 +181,8 @@ def knocked_out(your_hp, opponent_hp):
       '\n\n'
     )
     return True
+  else:
+    return False
 
 def play_as_server(client):
   if supports_ansi():
@@ -262,14 +264,13 @@ def play_as_server(client):
     client_stats['speed'], client_info['moveset']
   )
 
-
   # BATTLE STAGE #
   
   wait()
   print('Let the battle commence!')
   wait()
   
-  while both_alive(server_elementalist, client_elementalist):
+  while True:
 
     # choose a move
     print('Your moves:\n')
@@ -303,7 +304,7 @@ def play_as_server(client):
       server_atk_results['client_hp'] = client_elementalist.hp
       send(client, server_atk_results)
       print_atk_results(server_atk_results)
-      if not both_alive:
+      if knocked_out(server_elementalist.hp, client_elementalist.hp):
         break
     else:
       server_second = True
@@ -316,7 +317,7 @@ def play_as_server(client):
     client_atk_results['client_hp'] = client_elementalist.hp
     send(client, client_atk_results)
     print_def_results(client_atk_results)
-    if not both_alive:
+    if knocked_out(server_elementalist.hp, client_elementalist.hp):
       break
     # if server hadn't been first, server attacks client
     if server_second:
@@ -328,7 +329,7 @@ def play_as_server(client):
       server_atk_results['client_hp'] = client_elementalist.hp
       send(client, server_atk_results)
       print_atk_results(server_atk_results)
-      if not both_alive: 
+      if knocked_out(server_elementalist.hp, client_elementalist.hp):
         break
 
     # status conditions
@@ -349,9 +350,6 @@ def play_as_server(client):
       'client_hp': client_elementalist.hp
     }
     send(client, status_info)
-
-  # one player has lost
-  knocked_out(server_elementalist.hp, client_elementalist.hp)
 
 def play_as_client(server):
   if supports_ansi():
@@ -386,8 +384,7 @@ def play_as_client(server):
   print('Let the battle commence!')
   wait()
   
-  game_over = False
-  while not game_over:
+  while True:
 
     print('Your moves:\n')
     for move in client_moveset:
@@ -408,8 +405,7 @@ def play_as_client(server):
       print_atk_results(results)
 
     # check if game over
-    game_over = knocked_out(results['client_hp'], results['server_hp'])
-    if game_over:
+    if knocked_out(results['client_hp'], results['server_hp']):
       break
 
     # slower player's attack results
@@ -420,8 +416,7 @@ def play_as_client(server):
       print_atk_results(results)
 
     # check if game over
-    game_over = knocked_out(results['client_hp'], results['server_hp'])
-    if game_over:
+    if knocked_out(results['client_hp'], results['server_hp']):
       break
 
     # receive status info
@@ -432,8 +427,7 @@ def play_as_client(server):
     if status_info['client_status'] == 'burned':
       print('You lose 25 HP from your burn.')
       wait()
-    game_over = knocked_out(status_info['client_hp'], status_info['server_hp'])
-    if game_over:
+    if knocked_out(status_info['client_hp'], status_info['server_hp']):
       break
 
 if __name__ == '__main__':
