@@ -1,16 +1,19 @@
+from moves import MOVES
+from random import random, randint
+
 def server_first(server_elem, server_move, client_elem, client_move):
   if (
     server_elem.speed + MOVES[server_move]['speed'] > 
-    client_elem.speed + MOVES[client_move]
+    client_elem.speed + MOVES[client_move]['speed']
   ):
     return True
   elif (
     server_elem.speed + MOVES[server_move]['speed'] < 
-    client_elem.speed + MOVES[client_move]
+    client_elem.speed + MOVES[client_move]['speed']
   ):
     return False
   else: # 50-50 chance who goes first if equal speeds
-    return random.randint(1, 3) % 2 == 0
+    return randint(1, 3) % 2 == 0
 
 def is_strong(movetype, element):
   return (
@@ -31,7 +34,10 @@ def is_weak(movetype, element):
 def attack(attacker, move, defender):
   strong = False
   weak = False
-  damage = attacker.attack + MOVES[move]['power']
+  if MOVES[move]['power'] != 0: # if it's an attack move
+    damage = attacker.attack + MOVES[move]['power']
+  else:
+    damage = 0
   if damage != 0:
     if is_strong(MOVES[move]['type'], defender.element):
       damage *= 2
@@ -44,7 +50,7 @@ def attack(attacker, move, defender):
   backlash = 0
   atkboost = 0
   spdboost = 0
-  rando = random.random()
+  rando = random()
   if defender.status == 'healthy':
     if MOVES[move]['effect']['typ'] == 'burn':
       if rando < MOVES[move]['effect']['probability']:

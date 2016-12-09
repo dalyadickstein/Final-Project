@@ -25,7 +25,7 @@ def supports_ansi():
 
 def pick_stats(): 
   n = 1
-  print('Next, choose which set of stats you want.')
+  print('Next, choose which set of stats you want.\n')
   for stat in STAT_OPTIONS:
     print(
       'Stats {}:\nHP: {}   Attack: {}   Speed: {}\n'.format(
@@ -39,6 +39,7 @@ def pick_stats():
       stats == '1' or stats == '2' or stats == '3' or
       stats == '4' or stats == '5'
     ):
+      print('\n')
       return stats
 
 def pick_element():
@@ -52,6 +53,7 @@ def pick_element():
       element == 'fire' or element == 'water' or 
       element == 'wind' or element == 'earth'
     ):
+      print('\n')
       return element
     element = input('Earth, Fire, Water, or Wind? ').lower()
 
@@ -67,11 +69,17 @@ def pick_moveset(element):
     # test if move exists in movelist
     is_valid = False
     while not is_valid:
-      if move_choice in MOVES and move_choice not in moveset:
+      if (
+        move_choice in MOVES and 
+        move_choice not in moveset and
+        (MOVES[move_choice]['type'] == 'normal' or 
+        MOVES[move_choice]['type'] == element)
+      ):
         moveset.append(move_choice)
         is_valid = True
       if not is_valid:
         move_choice = input('Invalid move. Choose your move: ').lower()
+  print('\n')
   return moveset
 
 def print_move(move):
@@ -85,11 +93,11 @@ def print_move(move):
 # what prints to your screen when you make an attack
 def print_atk_results(results):
   if results['strong']:
-    print('It\'s super effective against your opponent!', end='')
+    print('It\'s super effective against your opponent!')
   if results['weak']:
     print(
       'Unfortunately, your move\'s type is weak against this particular ' +
-      'opponent.', end =''
+      'opponent.'
     )
   if results['damage'] != 0:
     print('You dealt {} damage!'.format(results['damage']))
@@ -136,6 +144,29 @@ def print_def_results(results):
     )
   print('')
 
+def knocked_out(your_hp, opponent_hp):
+  if your_hp > 0 and opponent_hp <= 0:
+    print(
+      'You smite your opponent upon the slopes of the great mountain.\n' +
+      'You have won. Well fought, elementalist.\n\n'
+    )
+    return True
+  elif your_hp <= 0 and opponent_hp > 0:
+    print(
+      'You fall to your knees, unable to hold yourself up any longer as your ' +
+      'head swims and your vision darkens, and you fall slowly into the ' +
+      'abyss.\nYou have fallen.\n\n'
+    )
+    return True
+  elif your_hp <= 0 and opponent_hp <= 0:
+    print(
+      'In one final, mighty clash, you both throw yourselves at each other ' +
+      'with all of your remaining strength.\nYou are evenly matched until ' +
+      'the end.\nYou fall there, side by side, equals in both life and death.' +
+      '\n\n'
+    )
+    return True
+
 def play_as_server(client):
   if supports_ansi():
     print('\x1b[3F\x1b[J', end='') # clear initial connection text
@@ -176,7 +207,7 @@ def play_as_server(client):
       ' the code. Exiting the program.'
     )
   # check that client chose one of the five stats options
-  if client_info['stats'] not in range (1, 6):
+  if int(client_info['stats']) not in range (1, 6):
     raise SystemExit(
       'The client\'s stats choice was invalid. Client may be tampering with ' +
       'the code. Exiting the program.'
@@ -216,9 +247,12 @@ def play_as_server(client):
     client_stats['speed'], client_info['moveset']
   )
 
-  print('Let the battle commence!\n\nYour moves:\n')
 
   # BATTLE STAGE #
+  
+  print('\n')
+
+  print('Let the battle commence!\n\nYour moves:\n')
   
   while both_alive(server_elementalist, client_elementalist):
 
@@ -228,6 +262,7 @@ def play_as_server(client):
     while True: 
       server_move = input('Choose your move: ').lower()
       if server_move in server_elementalist.moveset:
+        print('\n')
         break
     # receive and validate client's move
     client_move = receive(client)
@@ -247,6 +282,9 @@ def play_as_server(client):
       )
       # let client know which results these are
       server_atk_results['attacker'] = 'server'
+      # tell client the hp of each after the attack
+      server_atk_results['server_hp'] = server_elementalist.hp
+      server_atk_results['client_hp'] = client_elementalist.hp
       send(client, server_atk_results)
       print_atk_results(server_atk_results)
       if not both_alive:
@@ -258,6 +296,8 @@ def play_as_server(client):
       client_elementalist, client_move, server_elementalist
     )
     client_atk_results['attacker'] = 'client'
+    client_atk_results['server_hp'] = server_elementalist.hp
+    client_atk_results['client_hp'] = client_elementalist.hp
     send(client, client_atk_results)
     print_def_results(client_atk_results)
     if not both_alive:
@@ -268,6 +308,8 @@ def play_as_server(client):
         server_elementalist, server_move, client_elementalist
       )
       server_atk_results['attacker'] = 'server'
+      server_atk_results['server_hp'] = server_elementalist.hp
+      server_atk_results['client_hp'] = client_elementalist.hp
       send(client, server_atk_results)
       print_atk_results(server_atk_results)
       if not both_alive: 
@@ -281,26 +323,17 @@ def play_as_server(client):
       print('Your opponent loses 25 HP from burns.\n')
       client_elementalist.hp -= 25
 
-  # one player has lost
-  if server_elementalist.hp > 0 and client_elementalist.hp <= 0:
-    print(
-      'You smite your opponent upon the slopes of the great mountain.\n' +
-      'You have won. Well fought, elementalist.\n\n'
-    )
-  elif server_elementalist.hp <= 0 and client_elementalist.hp > 0:
-    print(
-      'You fall to your knees, unable to hold yourself up any longer as your ' +
-      'head swims and your vision darkens, and you fall slowly into the ' +
-      'abyss.\nYou have fallen.\n\n'
-    )
-  else:
-    print(
-      'In one final, mighty clash, you both throw yourselves at each other ' +
-      'with all of your remaining strength.\nYou are evenly matched until ' +
-      'the end.\nYou fall there, side by side, equals in both life and death.' +
-      '\n\n'
-    )
+    # send status condition info to client
+    status_info = {
+      'server_status': server_elementalist.status,
+      'client_status': client_elementalist.status,
+      'server_hp': server_elementalist.hp,
+      'client_hp': client_elementalist.hp
+    }
+    send(client, status_info)
 
+  # one player has lost
+  knocked_out(server_elementalist.hp, client_elementalist.hp)
 
 def play_as_client(server):
   if supports_ansi():
@@ -331,44 +364,56 @@ def play_as_client(server):
 
   # BATTLE STAGE #
   
-  while both_alive:
+  print('\n')
 
-    for move in client_elementalist.moveset:
+  print('Let the battle commence!\n\nYour moves:\n')
+  
+  game_over = False
+  while not game_over:
+
+    for move in client_moveset:
       print_move(move)
     # push client for move until valid move entered
     while True: 
       client_move = input('Choose your move: ').lower()
-      if client_move in client_elementalist.moveset:
+      if client_move in client_moveset:
+        print('\n')
         break
     send(server, client_move)
 
     # faster player's attack results
     results = receive(server)
-    if results['attacker'] == 'client':
+    if results['attacker'] == 'server':
       print_def_results(results)
     else:
       print_atk_results(results)
 
     # check if game over
-    if not both_alive:
-      print_winner(server_elementalist, client_elementalist)
-      break 
+    game_over = knocked_out(results['client_hp'], results['server_hp'])
+    if game_over:
+      break
 
     # slower player's attack results
-    if results['attacker'] == 'client':
+    results = receive(server)
+    if results['attacker'] == 'server':
       print_def_results(results)
     else:
       print_atk_results(results)
 
     # check if game over
-    if not both_alive:
-      print_winner(server_elementalist, client_elementalist)
-      break 
+    game_over = knocked_out(results['client_hp'], results['server_hp'])
+    if game_over:
+      break
 
-    if server_elementalist.status == 'burned':
-      print('Your opponent loses 25 HP from burns.')
-    if client_elementalist.status == 'burned':
-      print('You lose 25 HP from your burn.')
+    # receive status info
+    status_info = receive(server)
+    if status_info['server_status'] == 'burned':
+      print('Your opponent loses 25 HP from burns.\n')
+    if status_info['client_status'] == 'burned':
+      print('You lose 25 HP from your burn.\n')
+    game_over = knocked_out(status_info['client_hp'], status_info['server_hp'])
+    if game_over:
+      break
 
 if __name__ == '__main__':
   if 'start' in input('Would you like to start or join? ').lower():
