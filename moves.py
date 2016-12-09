@@ -72,7 +72,7 @@ MOVES = {
     'speed': 75,
     'info': 'But you can do jujitsu!',
     'effect': {
-      'type': 'none'
+      'typ': 'none'
     }
   },
   'earthquake': {
