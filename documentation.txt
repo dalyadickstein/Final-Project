@@ -1,0 +1,77 @@
+--- USER MANUAL ---
+
+************************
+* GENERAL DESCRIPTION: *
+************************
+This is a text-based, turn-based, two-player battle game. Two people can play
+either on the same computer, in two different terminal windows, or over a local
+area network on their own computers. The game is a battle between two mages,
+each specializing in a certain element, or "elementalists." Each player chooses
+an element (Earth, Fire, Water, or Wind). Each element has differenet moves 
+associated with it, from which the users can pick three. The users also pick 
+their initial stats (HP, attack, and speed), and then choose moves turn-by-turn
+until they knock out the opponent.
+
+********************
+* GETTING STARTED: *
+********************
+Note: This program was initially written using Sublime Text and run on a regular 
+terminal. I am not sure whether the CS50 IDE will allow two computers to connect
+over LAN when running this program. 
+
+If you would like the program on your own computer, first make sure that you are
+running Python3. The program can then be cloned from Github by running the 
+following command in your terminal: 
+git clone https://github.com/dalyadickstein/Final-Project.git
+Then enter the Final Project folder in your terminal and run game.py with the 
+command: 
+python3 game.py
+(at least in a standard terminal - I'm not sure if other terminals call for 
+different commands for running Python3 files).
+
+The game will then prompt you to start or join. If you type 'start', you will be
+the server, and will be provided with your IP address and port that the client
+will have to input. If you type anything other than 'start', the program will
+assume you have made a typo and want to join, and will prompt you for the
+server's "Host" and "Port" that were just printed to the server's screen. Input
+these, and the game will begin. 
+
+*************
+* GAMEPLAY: *
+*************
+Choose your element:
+You will first be prompted to choose your element. Each element comes with its
+own set of moves according to its type (i.e. water-type elementalist will have
+water-type moves), plus normal-type moves that all elementalists have. Each type
+is strong against one other type and weak against another: Fire is strong
+agaisnt wind, wind is strong against earth, earth is strong against water, and
+water is strong against fire. (In the same way, fire is weak on water, etc.).
+Your opponent will also pick, but you will not betold what your opponent picks.
+
+Choose your stats:
+Next you are given five options for sets of stats, which include HP (health/hit
+points), attack, and speed. Enter the number for the set you want. Again, you
+will not be informed of your opponent's choice.
+
+Choose your moves:
+You will finally be prompted to choose your moves out of the moves printed to 
+your screen. Each elementalist has its own list of possible choices that include
+moves of its type plus normal-type moves. The moves' attack power, speed, types,
+and description are printed to the screen. You will be asked to enter your three
+choices one by one by typing the name of the move. You may not choose the same 
+move twice. 
+
+Battling:
+Your three chosen moves will be printed to the screen, with their full 
+descriptions. Choose one by typing in its name and hitting enter, as before.
+The game will wait until both players have chosen moves, and then will calculate
+who moves first by comparing the combined move speed and player speed stat. The
+results of each round will be printed to the screen. However, you will only see
+the results. You still will not know what choices your opponent made, so you can
+have fun figuring it out or just enjoy the mystery. 
+
+You will be prompted to enter your next move, and the next round will commence,
+until one player kills the other, upon which the program will announce the 
+winner and exit. 
+
+Have fun playing and may the most skilled elementalist win!

@@ -76,6 +76,3 @@ def attack(attacker, move, defender):
     'spdboost': spdboost
   }
   return results
-
-def both_alive(server_elementalist, client_elementalist):
-  return server_elementalist.hp > 0 and client_elementalist.hp > 0

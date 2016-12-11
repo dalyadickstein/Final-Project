@@ -34,7 +34,7 @@ def start_server_and_connect_to_client():
 
   # wait for client to connect
   client_socket = server_socket.accept()[0]
-  yield client_socket
+  yield client_socket # code from game.py runs here before closing socket
   
   # close our sockets
   client_socket.close()
@@ -45,16 +45,11 @@ def start_client_and_connect_to_server():
   host = input('Host: ')
   port = input('Port: ')
   client_socket = socket.create_connection((host, port))
-  yield client_socket
+  yield client_socket # code from game.py runs here before closing socket
   client_socket.close()
 
 def send(peer_socket, data):
   msg = json.dumps(data).encode('utf-8')
-  # # # # # # # # # # # # # # # # # # # 
-  #                                   #
-  #   ASK LEE ABOUT HTONL AND NTOHL   #
-  #                                   #
-  # # # # # # # # # # # # # # # # # # #
   msg_size = len(msg).to_bytes(4, byteorder='big')
   msg = msg_size + msg # prepend size of message to message body
   while msg:

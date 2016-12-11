@@ -1,0 +1,113 @@
+General Overview of Files:
+
+In implementing my program, I used six different files:
+elementalist.py - creates the class Elementalist
+moves.py - contains the map MOVES, including all of the possible moves in the 
+  game
+stats.py - contains the options for stat distribution 
+fight.py - contains functions used in the battle section of the game
+net.py - codes for the ability to connect over LAN 
+game.py - the code for the game itself, and the file that is run
+
+**********
+* net.py *
+**********
+I started with net.py and wrote the code for the LAN connection, but put it in
+its own file because it made sense to separate it from game.py, which just
+contains the game itself. net.py includes all of the relevant functions needed
+for this connection, such as sending and receiving data. The send and receive 
+functions use JSON as an easy, clean way of sending chunks of information back
+and forth, which is perfect for sending data of battle results.
+
+The two functions start_as_... both contain just the framework necessary for 
+opening and closing the LAN connection, and yield in the middle so that game.py
+can run its code after the sockets are opened, and then after game.py is 
+finished, the sockets are closed.
+
+*******************
+* elementalist.py *
+*******************
+elementalist.py is very simple, just containing the class Elementalist with an
+instantiation function with the necessary fields for creating an elementalist.
+The information for instantiating the client and server's elementalists will be
+gotten through prompting before the battle phase. This prompting is carried out
+in game.py.
+
+************
+* moves.py *
+************
+QUESTION: MAPS, CLASSES/OBJECTS, OR FUNCTIONS?
+I spend a lot of time deciding how I wanted to implement and organize my game to
+give me the easiest and most flexible functionality. I originally started by 
+making each move a class, but later realized that this was inconvenient for a 
+number of reasons: I would have to then create instances of every move, printing
+the moves in clear way was more complicated than necessary, and having movelists
+was not as easily supported. I tried changing the moves from classes to 
+functions, but realized that this was if possibly more inconvenient for having
+similar affects, printing results to the user, and creating movelists. 
+
+Instead I switched to creating a master map of all possible moves. I had leaned 
+away  from this initially because I wanted each elementalist to only have 
+certain moves be available, and now had to figure out how to make that happen 
+while using one master list. Since I already had included a "type" field for 
+each move (so that I can test whether a move is super effective or weak against 
+an opponent), it became a simple matter of checking to see whether a move is the
+same type as the elementalist (or normal type), and only allow those moves to be
+chosen. The user would be reprompted if the move is not valid.
+
+moves.py includes just this map, and a quick glance through will tell you all
+of the possible moves, which types they match with, and all of the possible 
+special effects moves can have.
+
+************
+* stats.py *
+************
+Simple array of maps containing the five different ways players will be able to 
+distribute their stats. This was a clear way to implement stats, allowing for 
+easy access, easy grouping of stats, and easy ways to have the user view their 
+options and choose one.
+
+*********************
+* fight.py, game.py *
+*********************
+QUESTION: TRUST THE CLIENT?
+One of the benefits of using maps was their ease of use and ability to contain
+multiple key-value pairs, and maps within maps. They were especially helpful 
+because of the client-server sending of information. I could have written the
+client and server code the same way, having both access the players' stats and
+moves, but I decided instead that the program should not trust the client. It 
+would ruin the game if the client were able to modify the code and send, say, a
+super-powerful attack and always win, or otherwise mess with the program. 
+Therefore, the code on the client's side does not actually implement any changes
+to the players' data (for example, the client's side does not lower the HP of 
+the server, because then the client could change the code to completely deplete
+the opponent's HP, etc). Instead, the client sends strings back to the server,
+and the serverside code includes validation checks to make sure that the string
+is say, a valid move, and then calls the necessary battle functions. 
+
+The battle functions that actually contain the logic behind the battling are put
+into fight.py. They take in information such as the elementalist objects, the 
+chosen moves, and players' stats, then perform calculations and implement the 
+necessary changes to the players' stats. They then send the information back to
+the server so that the server can print it to the screen and send it to the 
+client to be printed to the client's screen. Thus, all of the actual battle 
+effects and stat changes are done serverside, mostly through functions in 
+fight.py, and are formatted and printed with printing functions found in game.py
+which I designed for the most pleasant user experience. 
+
+game.py includes the actual step-by-step of the game itself, and any code that
+prints to either screen. It is responsible for prompting the users for input,
+performing validation checks on the players' responses, calling the necessary
+battle functions, and printing the results of each round to the screen. The 
+functions left in game.py are such printing functions that format the data that
+was returned by the battle functions in fight.py. 
+
+The play_as_server function, as mentioned previously, is the one actually 
+calling the fight.py functions. It receives data from the client after the 
+client prompts the user, and then runs a validation check in case the client is
+malicious. (The client has validation checks clientside in case the client 
+mistyped, etc, but in case the client actively changed the code, the server
+checks the client's data again serverside). The server calls the appropriate 
+functions, returns the data to the client, and then the server and client call
+the print functions, passing in the data. After every attack, the server and
+client check whether one player has been defeated and if so, ends the game.

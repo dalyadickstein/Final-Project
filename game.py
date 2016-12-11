@@ -7,7 +7,7 @@ from random import randint, random
 from stats import STAT_OPTIONS
 from moves import MOVES
 from elementalist import Elementalist
-from fight import server_first, attack, both_alive, is_strong, is_weak
+from fight import server_first, attack, is_strong, is_weak
 from net import (
   start_client_and_connect_to_server,
   start_server_and_connect_to_client,
