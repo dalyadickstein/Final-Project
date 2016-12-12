@@ -56,10 +56,7 @@ def pick_element():
   time.sleep(1)
   element = input('Your element: ').lower()
   while True:
-    if (
-      element == 'fire' or element == 'water' or 
-      element == 'wind' or element == 'earth'
-    ):
+    if element in {'earth', 'fire', 'water', 'wind'}:
       print('\n')
       return element
     element = input('Earth, Fire, Water, or Wind? ').lower()
@@ -99,6 +96,7 @@ def print_move(move):
 
 # what prints to your screen when you make an attack
 def print_atk_results(results):
+  print('You used {}!'.format(results['move']))
   if results['strong']:
     print('It\'s super effective against your opponent!')
   if results['weak']:
@@ -122,6 +120,7 @@ def print_atk_results(results):
 
 # what prints to your screen when you are attacked by the opponent
 def print_def_results(results):
+  print('Your opponent used {}!'.format(results['move']))
   if results['strong']:
     print('The opponent launches a devastating attack!')
   if results['weak']:
@@ -168,8 +167,8 @@ def knocked_out(your_hp, opponent_hp):
     return True
   elif your_hp <= 0 and opponent_hp > 0:
     print(
-      'You fall to your knees, unable to hold yourself up any longer as your ' +
-      'head swims and your vision darkens, and you fall slowly into the ' +
+      'You fall to your knees, unable to hold yourself up any longer\nas your' +
+      ' head swims and your vision darkens,\nand you fall slowly into the ' +
       'abyss.\nYou have fallen.\n\n'
     )
     return True
@@ -215,10 +214,7 @@ def play_as_server(client):
 
   client_info = receive(client)
   # don't trust client: check info before instantiating elementalist
-  if (
-    client_info['element'] != 'earth' and client_info['element'] != 'fire' and
-    client_info['element'] != 'water' and client_info['element'] != 'wind'
-  ):
+  if client_info['element'] not in {'earth', 'fire', 'water', 'wind'}:
     raise SystemExit(
       'The client\'s element choice was invalid. Client may be tampering with' +
       ' the code. Exiting the program.'
@@ -272,6 +268,15 @@ def play_as_server(client):
   
   while True:
 
+    hp_info = {
+      'server_hp': server_elementalist.hp,
+      'client_hp': client_elementalist.hp
+    }
+    send(client, hp_info)
+    print('Your HP: {}    Opponent\'s HP: {}\n'.format(
+        server_elementalist.hp, client_elementalist.hp
+      )
+    )
     # choose a move
     print('Your moves:\n')
     for move in server_elementalist.moveset:
@@ -351,6 +356,10 @@ def play_as_server(client):
     }
     send(client, status_info)
 
+    # check that the status condition didn't knock one out
+    if knocked_out(server_elementalist.hp, client_elementalist.hp):
+        break
+
 def play_as_client(server):
   if supports_ansi():
     print('\x1b[3F\x1b[J', end='') # clear initial connection text
@@ -386,6 +395,11 @@ def play_as_client(server):
   
   while True:
 
+    hp_info = receive(server)
+    print('Your HP: {}    Opponent\'s HP: {}\n'.format(
+        hp_info['client_hp'], hp_info['server_hp']
+      )
+    )
     print('Your moves:\n')
     for move in client_moveset:
       print_move(move)

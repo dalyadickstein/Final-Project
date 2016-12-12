@@ -43,7 +43,7 @@ def attack(attacker, move, defender):
       damage *= 2
       strong = True
     if is_weak(MOVES[move]['type'], defender.element):
-      damage /= 2
+      damage //= 2
       weak = True
   defender.hp -= damage
   status = 'none'
@@ -67,6 +67,7 @@ def attack(attacker, move, defender):
       attacker.attack += atkboost
       attacker.speed += spdboost
   results = {
+    'move': move,
     'strong': strong,
     'weak': weak,
     'damage': damage,

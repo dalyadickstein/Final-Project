@@ -7,7 +7,11 @@ from contextlib import contextmanager
 # https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
 def get_local_ipv4():
   # Try to get local IP that other computers can recognize you by
-  ip = socket.gethostbyname(socket.gethostname())
+  ip = '127.0.0.1'
+  try: 
+    ip = socket.gethostbyname(socket.gethostname())
+  except OSError:
+    pass
   # If IP is only returning local host, try a different method
   if ip == '127.0.0.1' or ip == '0.0.0.0':
     # try to connect to Google DNS and check own address from connection
